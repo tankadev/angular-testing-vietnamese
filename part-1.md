@@ -82,7 +82,7 @@ Bên trong mỗi spec chúng ta gọi `expect` và cung cấp cho nó cái gì �
 
 > Còn rất nhiều `matcher` cho phép chúng ta sử dụng ngoài toEqual. Bạn có thể xem tất cả danh sách bên trong [tài liệu Jasmine](https://jasmine.github.io/api/edge/matchers.html).
 
-Kiểm tra của chúng ta không quan tâm đến Adder `đạt được đến kết quả như thế nào`. Chúng ta chỉ quan tâm về câu trả lời của Adder cung cấp cho chúng ta. Cho tất cả những gì chúng ta biết, đây là quá trình Adder thực hiện việc `cộng`.
+Kiểm tra của chúng ta không quan tâm đến quá trình Adder `đạt được đến kết quả đó như thế nào`. Chúng ta chỉ quan tâm về câu trả lời của Adder cung cấp cho chúng ta. Cho tất cả những gì chúng ta biết, đây là quá trình Adder thực hiện việc `cộng`.
 
 ```ts
 function add(first, second) {
@@ -97,3 +97,112 @@ function add(first, second) {
 ```
 
 Nói cách khác, chúng ta chỉ quan tâm đến giá trị mong đợi mà Adder trả ra - chúng ta không quan tâm đến Adder thực hiện quá trình đó như thế nào.
+
+## Cài đặt Angular
+
+Chúng ta sẽ bắt đầu bằng cách tạo một ứng dụng mới sử dụng Angular CLI.
+
+```
+ng new angular-testing --routing
+```
+
+Khi chúng ta có nhiều màn hình trong ứng dụng, chúng ta sử dụng cờ `--routing`, CLI sẽ tự động tạo ra routing module cho chúng ta.
+
+Tại đây chúng ta có thể xác nhận lại tất cả đã hoạt động chính xác bằng cách di chuyển vào thư mục `angular-testing` vừa mới tạo và chạy ứng dụng.
+
+```
+cd angular-tesing
+ng serve -o
+```
+
+![Chạy ứng dụng Angular](assets/running-ng-serve.png)
+
+Bạn cũng có thể xác minh hiện tại ứng dụng kiểm thử có đang vượt qua hết các trạng thái kiểm tra hay không.
+
+```
+ng test
+```
+
+## Thêm trang home
+
+Trước khi tạo một service của trang home để thể hiện thông tin của user, chúng ta sẽ tạo component của trang home.
+
+```
+ng g component home
+```
+
+Bây giờ component của chúng ta đã được tạo ra, chúng ta có thể cập nhật routing module (`app-routing.module.ts`) tại thư mục root (`src/app`) tới `HomeComponent`.
+
+```ts
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { HomeComponent } from './home/home.component';
+
+const routes: Routes = [
+  { path: '', component: HomeComponent }
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+```
+
+Chạy ứng dụng bạn sẽ thấy dòng text "home works!" phía dưới cùng của template mặc định trong `app.component.html` mà đã được tạo ra bởi CLI.
+
+## Xoá kiểm thử trong AppComponent
+
+Chúng ta không cần nội dung mặc định của `AppComponent`, hãy cập nhật lại nó bằng cách xoá một số code không cần thiết.
+
+Đầu tiên, xoá mọi thứ trong `app.component.html` và chỉ để lại `router-outlet` directive.
+
+```html
+<router-outlet></router-outlet>
+```
+
+Bên trong `app.component.ts`, bạn cũng nên xoá đi thuộc tính `title`.
+
+```ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent { }
+```
+
+Cuối cùng, bạn cập nhật lại test trong `app.component.spec.ts` bằng cách xoá đi 2 test cho một số nội dung mà chúng ta đã xoá trước đó trong `app.component.html`.
+
+```ts
+import { async, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AppComponent } from './app.component';
+describe('AppComponent', () => {
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        RouterTestingModule
+      ],
+      declarations: [
+        AppComponent
+      ],
+    }).compileComponents();
+  }));
+  it('should create the app', async(() => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.debugElement.componentInstance;
+    expect(app).toBeTruthy();
+  }));
+});
+```
+
+## Kiểm thử service Angular
+
+Bây giờ trang home của chúng ta đã được thiết lập, chúng ta sẽ tạo service để thể hiện thư mục của nhân viên trong trang này.
+
+```
+ng g serive services/users/users
+```
