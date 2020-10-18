@@ -43,3 +43,57 @@ Tôi yêu Jasmine bởi vì hầu như tất cả những gì tôi cần đều 
 Một tin tốt là chi phí chuyển đổi giữa những framwork kiểm thử tương đối thấp với sự khác biệt nhỏ về cú pháp như Jasmine là `toEqual()` và Mocha là `to.equal()`.
 
 ## Một ví dụ kiểm thử đơn giản
+
+Hãy tưởng tượng bạn có một người hầu ngoài hành tinh có tên là Adder sẽ đi với bạn khắp mọi nơi. Ngoài việc trở thành một người bạn đồng hành ngoài hành tinh dễ thương, Adder thực sự chỉ có thể làm một việc, cộng 2 số với nhau.
+
+Để xác minh lại khả năng của Adder là cộng 2 số, chúng ta có thể tạo ra một tập các trường hợp kiểm thử để xem liệu Adder có cung cấp cho chúng ta câu trả lời chính xác hay không.
+
+Với Jasmine, có thể bắt đầu với cái được gọi là [`suite`](https://jasmine.github.io/tutorials/your_first_suite) mà sẽ nhóm lại tập các trường hợp kiểm thử liên quan với nhau bằng cách gọi function `describe`.
+
+```ts
+// A Jasmine suite
+describe('Adder', () => {
+
+});
+```
+
+Từ đây chúng ta có thể cung cấp cho Adder với một tập các trường hợp kiểm thử như là hai số dương (2, 4), một số dương và số không (3, 0), một số dương và một số âm (5, -2) và nhiều trường hợp khác nữa.
+
+Với Jasmine, tất cả chúng được gọi là [`specs`](https://jasmine.github.io/tutorials/your_first_suite) mà chúng ta tạo ra bằng cách gọi function `it`, truyền giá trị kiểu chuỗi cho nó để diễn tả chức năng mà nó đang được kiểm thử.
+
+```ts
+describe('Adder', () => {
+  // A jasmine spec
+  it('should be able to add two whole numbers', () => {
+    expect(Adder.add(2, 2)).toEqual(4);
+  });
+
+  it('should be able to add a whole number and a negative number', () => {
+    expect(Adder.add(2, -1)).toEqual(1);
+  });
+
+  it('should be able to add a whole number and a zero', () => {
+    expect(Adder.add(2, 0)).toEqual(2);
+  });
+});
+```
+
+Bên trong mỗi spec chúng ta gọi `expect` và cung cấp cho nó cái gì đó gọi là `actual`. Sau sự mong đợi, hoặc `expect` là `matcher` function, như là `toEqual`, mà lập trình viên kiểm thử cung cấp với `giá trị mong đợi(expected output)` của code đang được kiểm thử.
+
+> Còn rất nhiều `matcher` cho phép chúng ta sử dụng ngoài toEqual. Bạn có thể xem tất cả danh sách bên trong [tài liệu Jasmine](https://jasmine.github.io/api/edge/matchers.html).
+
+Kiểm tra của chúng ta không quan tâm đến Adder `đạt được đến kết quả như thế nào`. Chúng ta chỉ quan tâm về câu trả lời của Adder cung cấp cho chúng ta. Cho tất cả những gì chúng ta biết, đây là quá trình Adder thực hiện việc `cộng`.
+
+```ts
+function add(first, second) {
+  if (true) { // why?
+    if (true) { // why??
+      if (1 === 1) { // why?!?1
+        return first + second;
+      }
+    }
+  }
+}
+```
+
+Nói cách khác, chúng ta chỉ quan tâm đến giá trị mong đợi mà Adder trả ra - chúng ta không quan tâm đến Adder thực hiện quá trình đó như thế nào.
