@@ -206,3 +206,72 @@ Bây giờ trang home của chúng ta đã được thiết lập, chúng ta s�
 ```
 ng g serive services/users/users
 ```
+
+Tại đây chúng ta đã tạo `users` service bên trong thư mục mới `services/users` sẽ giữ services của chúng ta cách biệt với thư mục gốc `app` để tránh sự lộn xộn.
+
+```ts
+import { TestBed } from '@angular/core/testing';
+import { UsersService } from './users.service';
+
+describe('UsersService', () => {
+  let usersService: UsersService; // Add this
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [UsersService]
+    });
+
+    usersService = TestBed.get(UsersService); // Add this
+  });
+
+  it('should be created', () => { // Remove inject()
+    expect(usersService).toBeTruthy();
+  });
+});
+```
+
+Trong đoạn code phía trên, `TestBed.configureTestingModule({})` thiết lập service chúng ta muốn test với `UsersService` bên trong `providers`. Sau đó chúng ta inject service bên trong test suite sử dụng `TestBed.get()` với service chúng ta muốn test như là một đối số. Chúng ta thiết lập giá trị trả về tới biến `usersService` mà sẽ cho phép chúng ta tương tác với service này bên trong những trường hợp kiểm thử của chúng ta.
+
+Bây giờ sẽ cấu trúc lại các trường hợp test của chúng ta, chúng ta thêm vào trường hợp test cho phương thức `all` mà sẽ trả về danh sách người dùng.
+
+```ts
+import { of } from 'rxjs'; // Add import
+
+describe('UsersService', () => {
+  ...
+
+  it('should be created', () => {
+    expect(usersService).toBeTruthy();
+  });
+
+  // Add tests for all() method
+  describe('all', () => {
+    it('should return a collection of users', () => {
+      const userResponse = [
+        {
+          id: '1',
+          name: 'Jane',
+          role: 'Designer',
+          pokemon: 'Blastoise'
+        },
+        {
+          id: '2',
+          name: 'Bob',
+          role: 'Developer',
+          pokemon: 'Charizard'
+        }
+      ];
+      let response;
+      spyOn(usersService, 'all').and.returnValue(of(userResponse));
+
+      usersService.all().subscribe(res => {
+        response = res;
+      });
+
+      expect(response).toEqual(userResponse);
+    });
+  });
+});
+```
+
+Tại đây chúng ta thêm kết quả mong đợi cho test mà phương thức `all` sẽ 
